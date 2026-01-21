@@ -3,7 +3,7 @@
 ## Overview
 
 This repository demonstrates a **local Apache Spark standalone cluster** and its orchestration using **Apache Airflow** in **client mode**.  
-The goal is to showcase Spark architecture, job execution, and observability **without relying on YARN, Mesos, or Kubernetes**, making it ideal for local development and interview demonstrations.
+The goal is to showcase Spark architecture, job execution, and observability **without relying on YARN, Mesos, or Kubernetes**, making it ideal for local development.
 
 The project is structured in two stages:
 
