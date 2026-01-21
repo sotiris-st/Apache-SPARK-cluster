@@ -33,9 +33,6 @@ Spark jobs are executed in **client mode** by submitting them directly to the Sp
 
 A shared directory is mounted at:
 
-```
-/tmp/spark-jobs
-
-
+```/tmp/spark-jobs
 ```
 
