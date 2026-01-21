@@ -37,3 +37,25 @@ A shared directory is mounted at:
 /tmp/spark-jobs
 ```
 
+This directory is backed by a Docker volume so that Spark jobs persist across container restarts.
+
+### Example Job
+
+A sample PySpark job (`test.py`) performs:
+
+- DataFrame creation
+- Data cleaning
+- Join operations
+- Aggregation
+- Action triggers (`show`, `count`)
+
+This verifies:
+- Executor allocation
+- Lazy evaluation
+- Job completion tracking in the History Server
+
+Jobs can be submitted using:
+
+```bash
+/opt/spark/bin/spark-submit test.py
+
