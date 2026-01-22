@@ -1,0 +1,131 @@
+version: "3.9"
+
+services:
+
+  # -------------------------------------------------
+  # INIT CONTAINER (runs once, fixes permissions)
+  # -------------------------------------------------
+  spark-init:
+    image: spark:3.5.0-java17
+    user: "0:0"
+    volumes:
+      - spark-events:/tmp/spark-events      
+      - spark-jobs:/tmp/spark-jobs
+    command: >
+      bash -c "
+        mkdir -p /tmp/spark-events &&
+        mkdir -p /tmp/spark-jobs &&
+        chown -R spark:spark /tmp/spark-events &&
+        chown -R spark:spark /tmp/spark-jobs
+              "
+
+  # -------------------------------------------------
+  # SPARK MASTER
+  # -------------------------------------------------
+  spark-master:
+    image: spark:3.5.0-java17
+    container_name: spark-master
+    depends_on:
+      spark-init:
+        condition: service_completed_successfully
+    command:
+      ["/opt/spark/bin/spark-class",
+       "org.apache.spark.deploy.master.Master",
+       "--host",
+       "spark-master"]
+    environment:
+      - SPARK_EVENTLOG_ENABLED=true
+      - SPARK_EVENTLOG_DIR=file:///tmp/spark-events
+    volumes:
+      - spark-events:/tmp/spark-events
+      - spark-jobs:/tmp/spark-jobs
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    networks:
+      - data-net
+
+  # -------------------------------------------------
+  # SPARK WORKER 1
+  # -------------------------------------------------
+  spark-worker-1:
+    image: spark:3.5.0-java17
+    container_name: spark-worker-1
+    depends_on:
+      - spark-master
+    command:
+      ["/opt/spark/bin/spark-class",
+       "org.apache.spark.deploy.worker.Worker",
+       "spark://spark-master:7077"]
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_EVENTLOG_ENABLED=true
+      - SPARK_EVENTLOG_DIR=file:///tmp/spark-events
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+    volumes:
+      - spark-events:/tmp/spark-events
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+    networks:
+      - data-net
+
+  # -------------------------------------------------
+  # SPARK WORKER 2
+  # -------------------------------------------------
+  spark-worker-2:
+    image: spark:3.5.0-java17
+    container_name: spark-worker-2
+    depends_on:
+      - spark-master
+    command:
+      ["/opt/spark/bin/spark-class",
+       "org.apache.spark.deploy.worker.Worker",
+       "spark://spark-master:7077"]
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_EVENTLOG_ENABLED=true
+      - SPARK_EVENTLOG_DIR=file:///tmp/spark-events
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+    volumes:
+      - spark-events:/tmp/spark-events     
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+    networks:
+      - data-net
+
+  # -------------------------------------------------
+  # SPARK HISTORY SERVER
+  # -------------------------------------------------
+  spark-history:
+    image: spark:3.5.0-java17
+    container_name: spark-history
+    depends_on:
+      spark-init:
+        condition: service_completed_successfully
+    command:
+      ["/opt/spark/bin/spark-class",
+       "org.apache.spark.deploy.history.HistoryServer",
+       "--properties-file",
+       "/opt/spark/conf/spark-defaults.conf"]
+    volumes:
+      - spark-events:/tmp/spark-events      
+      - ./spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+    ports:
+      - "18080:18080"
+    networks:
+      - data-net
+
+# -------------------------------------------------
+# VOLUMES
+# -------------------------------------------------
+volumes:
+  spark-events:  
+  spark-jobs:
+
+# -------------------------------------------------
+# NETWORKS
+# -------------------------------------------------
+networks:
+  data-net:
+    
