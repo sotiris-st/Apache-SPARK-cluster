@@ -57,7 +57,7 @@ Paste the code from `sample.py`, then press **Ctrl + D** to save.
 Submit the job to the Spark master:
 
 ```bash
-/opt/spark/bin/spark-submit --master spark://spark-master:7077 test.py
+/opt/spark/bin/spark-submit  test.py
 ```
 
 You should see execution logs in the terminal.
@@ -66,7 +66,7 @@ You should see execution logs in the terminal.
 
 ## Spark UIs
 
-- **Spark Master UI**: `http://localhost:8080\`
+- **Spark Master UI**: `http://localhost:8080`
  (workers and running applications)
-- **Spark History Server UI**: `http://localhost:18080\`
+- **Spark History Server UI**: `http://localhost:18080`
  (completed applications and event logs)
