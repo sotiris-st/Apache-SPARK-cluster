@@ -44,6 +44,66 @@ You should see execution logs in the terminal.
 
 ## Spark UIs
 
+## Spark configuration
+
+The standalone cluster uses a `spark-defaults.conf` file to set Spark defaults for job submission and observability.
+
+### Master 
+
+standalone
+
+- `spark.master spark://spark-master:7077`
+Sets the default Spark master URL for submissions, pointing to the standalone Spark master container.
+
+### History Server and event logs
+
+These settings enable Spark event logging so the **Spark History Server** can display completed applications:
+
+- `spark.eventLog.enabled true`
+Enables writing Spark event logs.
+
+- `spark.eventLog.dir file:///tmp/spark-events`
+Location where Spark writes event logs. In this project it is backed by a Docker volume for persistence.
+
+- `spark.history.fs.logDirectory file:///tmp/spark-events`
+Location the History Server reads from same directory as \`spark\.eventLog\.dir\`.
+
+- `spark.eventLog.compress true`
+Compresses event logs to save space.
+
+### Executors 
+
+local demo sizing
+
+These settings control how many executors Spark requests and how much resources they get:
+
+- `spark.executor.instances 2`
+Requests 2 executors 
+
+useful for a small demo cluster.
+
+- `spark.executor.cores 1`
+Allocates 1 CPU core per executor.
+
+- `spark.executor.memory 1g`
+Allocates 1 GB of heap memory per executor.
+
+- `spark.executor.memoryOverhead 256m`
+Allocates additional off-heap memory per executor 
+
+useful for JVM overhead and native memor yuse.
+
+### Spark UI reverse proxy 
+
+optional
+
+- `spark.ui.reverseProxy true`
+Enables reverse-proxy support for Spark UI links.
+
+- `spark.ui.reverseProxyUrl http://localhost:8080\`
+
+Base URL used when Spark builds UI links behind a proxy. This can be helpful when accessing Spark UI through a forwarded or proxied address.
+
 - **Spark Master UI**: `http://localhost:8080`
  (workers and running applications)
 - **Spark History Server UI**: `http://localhost:18080`
