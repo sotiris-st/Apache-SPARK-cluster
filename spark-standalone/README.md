@@ -55,8 +55,6 @@ The standalone cluster uses a `spark-defaults.conf` file to set Spark defaults f
 
 ### Master 
 
-standalone
-
 - `spark.master spark://spark-master:7077`
 Sets the default Spark master URL for submissions, pointing to the standalone Spark master container.
 
