@@ -88,7 +88,7 @@ Since Spark processes run as the `spark` user, this can lead to permission issue
 
 The `spark-init` container:
 
-- Creates required directories such as `/tmp/spark-events`
+- Creates required directories such as `/tmp/spark-events` and `/tmp/spark-jobs`
 - Sets correct ownership and permissions for the `spark` user
 - Exits once initialization is complete
 
